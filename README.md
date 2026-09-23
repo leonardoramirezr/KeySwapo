@@ -198,7 +198,7 @@ La estructura sigue [mac-app-template](https://github.com/leonardoramirezr/mac-a
 |---------|----------|
 | `make build` | Compila `build/KeySwapo.app` (firma *ad hoc*, o `SIGN_IDENTITY`). |
 | `make test` | Ejecuta las pruebas de `src/Core` y comprueba, con la distribución Latinoamericana real de macOS, que los nombres de teclas escriben lo esperado (ANSI e ISO). |
-| `make e2e-test` | Prueba de punta a punta: con la distribución Latinoamericana y el event tap de KeySwapo activo, simula `\|`, ⇧ + `\|`, `-` y ⇧ + `-` (teclados ANSI e ISO) y comprueba que un campo de texto recibe `_°-\|`. Cambia la distribución de teclado y escribe en la sesión, así que solo corre en CI. |
+| `make e2e-test` | Prueba de punta a punta: con la distribución Latinoamericana y el event tap de KeySwapo activo, simula `\|`, ⇧ + `\|`, `-` y ⇧ + `-` (teclados ANSI e ISO) y control + h → ←, y comprueba lo que recibe un campo de texto. Cambia la distribución de teclado y escribe en la sesión, así que solo corre en CI. |
 | `make run` | Compila y abre la app desde `build/`. |
 | `make install` | Compila, reemplaza `/Applications/KeySwapo.app` y la abre. |
 | `make check CONFIG=…` | Valida un JSON y muestra lo que hace. |
