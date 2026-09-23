@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          sw_vers
+          xcrun swiftc --version
+
+      - name: Core tests
+        run: make test
+
+      - name: Build app
+        run: make build
+
+      - name: Check example configurations
+        run: |
+          for file in examples/*.json; do
+            build/KeySwapo.app/Contents/MacOS/KeySwapo --check "$file"
+          done
+
+      - name: Package
+        run: ditto -c -k --keepParent build/KeySwapo.app build/KeySwapo.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KeySwapo-${{ matrix.os }}
+          path: build/KeySwapo.zip
