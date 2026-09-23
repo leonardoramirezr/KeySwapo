@@ -16,6 +16,12 @@ test:
 	$(SWIFTC) -o "$(BUILD_DIR)/layout-tests" src/Core/*.swift src/App/KeyboardLayout.swift tests/layout/main.swift
 	"./$(BUILD_DIR)/layout-tests"
 
+# End-to-end check for CI only: it switches the keyboard layout and simulates key presses.
+e2e-test:
+	mkdir -p "$(BUILD_DIR)"
+	$(SWIFTC) -o "$(BUILD_DIR)/e2e-tests" src/Core/*.swift src/App/EventTap.swift src/App/KeyboardLayout.swift tests/e2e/main.swift
+	"./$(BUILD_DIR)/e2e-tests"
+
 # Validates a configuration: make check [CONFIG=examples/pipe-to-underscore.json]
 check: build
 	"$(BUILD_DIR)/$(APP_NAME).app/Contents/MacOS/$(APP_NAME)" --check $(CONFIG)
@@ -37,4 +43,4 @@ reset-permissions:
 clean:
 	rm -rf "$(BUILD_DIR)"
 
-.PHONY: build test check run install reset-permissions clean
+.PHONY: build test e2e-test check run install reset-permissions clean

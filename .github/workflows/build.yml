@@ -41,6 +41,9 @@ jobs:
           grep -qF "grave_accent_and_tilde «|»  →  shift + slash «_»" <<< "$output"
           grep -qF "shift + slash «_»  →  grave_accent_and_tilde «|»" <<< "$output"
 
+      - name: End-to-end check (event tap + text field, Latin American layout)
+        run: make e2e-test
+
       - name: Package
         if: matrix.os == 'macos-15'
         run: ditto -c -k --keepParent build/KeySwapo.app build/KeySwapo.zip
