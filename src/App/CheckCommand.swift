@@ -4,18 +4,20 @@ import Foundation
 /// without starting the app. Without a file it checks ~/.config/keyswapo/keyswapo.json.
 enum CheckCommand {
     static func run(path: String?) -> Int32 {
-        let url = path.map { URL(fileURLWithPath: $0) } ?? ConfigStore().fileURL
+        let store = ConfigStore()
+        let url = path.map { URL(fileURLWithPath: $0) } ?? store.fileURL
+        let displayPath = path ?? store.displayPath
         let text: String
         do {
             text = try String(contentsOf: url, encoding: .utf8)
         } catch {
-            print("✗ No se pudo leer \(url.path): \(error.localizedDescription)")
+            print("✗ No se pudo leer \(displayPath): \(error.localizedDescription)")
             return 1
         }
         do {
             let configuration = try ConfigParser.parse(text)
             let layout = KeyboardLayout.Context.current
-            print("✓ \(url.path): \(pluralize(configuration.rules.count, "regla", "reglas")), \(pluralize(configuration.manipulatorCount, "cambio de tecla", "cambios de tecla"))")
+            print("✓ \(displayPath): \(pluralize(configuration.rules.count, "regla", "reglas")), \(pluralize(configuration.manipulatorCount, "cambio de tecla", "cambios de tecla"))")
             print("  \(KeyboardLayout.summary)")
             for rule in configuration.rules {
                 print("\n• \(rule.description)")
@@ -28,7 +30,7 @@ enum CheckCommand {
             printWarnings(configuration.warnings)
             return 0
         } catch let error as ConfigError {
-            print("✗ \(url.path) tiene errores; KeySwapo no la aplicaría:")
+            print("✗ \(displayPath) tiene errores; KeySwapo no la aplicaría:")
             for issue in error.issues {
                 print("  • \(issue)")
             }

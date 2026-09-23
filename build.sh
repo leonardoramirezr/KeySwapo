@@ -19,6 +19,7 @@ echo "Compiling..."
 xcrun swiftc \
     -parse-as-library \
     -O \
+    -wmo \
     -target "${ARCH}-apple-macos${MIN_MACOS}" \
     -o "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}" \
     src/Core/*.swift src/App/*.swift \

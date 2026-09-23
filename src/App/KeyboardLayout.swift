@@ -57,9 +57,9 @@ enum KeyboardLayout {
         let layout = UnsafeRawPointer(bytes).assumingMemoryBound(to: UCKeyboardLayout.self)
 
         var deadKeyState: UInt32 = 0
-        var length: UniCharCount = 0
+        var length = 0
         var characters = [UniChar](repeating: 0, count: 8)
-        let maxLength = UniCharCount(characters.count)
+        let maxLength = characters.count
         let status = UCKeyTranslate(
             layout,
             keyCode,
@@ -73,7 +73,7 @@ enum KeyboardLayout {
             &characters
         )
         guard status == noErr, length > 0 else { return nil }
-        return displayable(String(utf16CodeUnits: characters, count: Int(length)))
+        return displayable(String(utf16CodeUnits: characters, count: length))
     }
 
     /// Readable form of typed text: "␣" for a space, nil for control characters and the

@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [macos-15, macos-26]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Toolchain
         run: |
@@ -35,9 +35,11 @@ jobs:
           done
 
       - name: Package
+        if: matrix.os == 'macos-15'
         run: ditto -c -k --keepParent build/KeySwapo.app build/KeySwapo.zip
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
+        if: matrix.os == 'macos-15'
         with:
-          name: KeySwapo-${{ matrix.os }}
           path: build/KeySwapo.zip
+          archive: false

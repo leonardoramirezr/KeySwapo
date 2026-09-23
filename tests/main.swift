@@ -300,7 +300,7 @@ test("| alone types _ (shift + slash)") {
     expectEqual(remapper.process(up(grave)), send(slash, leftShift))
 }
 
-test("| with shift or option is left alone, so ° and ¬ still work") {
+test("| with shift, option or command is left alone, so ° still works") {
     let remapper = try makeRemapper(DefaultConfig.json)
     expectEqual(remapper.process(down(grave, leftShift)), .passThrough)
     expectEqual(remapper.process(up(grave, leftShift)), .passThrough)
