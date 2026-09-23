@@ -1,0 +1,64 @@
+{
+    "title": "Ejemplos de KeySwapo",
+    "rules": [
+        {
+            "description": "| -> _ también con Bloq Mayús activado (shift + | sigue dando °)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "grave_accent_and_tilde",
+                        "modifiers": { "optional": ["caps_lock"] }
+                    },
+                    "to": [{ "key_code": "slash", "modifiers": ["shift"] }]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "slash",
+                        "modifiers": { "mandatory": ["shift"], "optional": ["caps_lock"] }
+                    },
+                    "to": [{ "key_code": "grave_accent_and_tilde" }]
+                }
+            ]
+        },
+        {
+            "description": "control + h/j/k/l -> flechas (shift y otros modificadores se conservan)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": { "key_code": "h", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
+                    "to": [{ "key_code": "left_arrow" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "j", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
+                    "to": [{ "key_code": "down_arrow" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "k", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
+                    "to": [{ "key_code": "up_arrow" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "l", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
+                    "to": [{ "key_code": "right_arrow" }]
+                }
+            ]
+        },
+        {
+            "description": "command derecho + k -> seleccionar todo y copiar (secuencia de teclas, sin repetición)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": { "key_code": "k", "modifiers": { "mandatory": ["right_command"] } },
+                    "to": [
+                        { "key_code": "a", "modifiers": ["command"] },
+                        { "key_code": "c", "modifiers": ["command"], "repeat": false }
+                    ]
+                }
+            ]
+        }
+    ]
+}
