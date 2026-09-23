@@ -1,9 +1,35 @@
 import Foundation
 
-/// `KeySwapo --check [archivo.json]`: validates a configuration and prints what it does,
-/// without starting the app. Without a file it checks ~/.config/keyswapo/keyswapo.json.
+/// `KeySwapo --check [archivo.json] [--layout ID]`: validates a configuration and prints what
+/// it does, without starting the app. Without a file it checks ~/.config/keyswapo/keyswapo.json.
+/// `--layout` shows the characters of another keyboard layout, for example
+/// `com.apple.keylayout.LatinAmerican`.
 enum CheckCommand {
-    static func run(path: String?) -> Int32 {
+    /// `arguments` are the ones after `--check`.
+    static func run(arguments: [String]) -> Int32 {
+        var path: String?
+        var remaining = arguments[...]
+        while let argument = remaining.popFirst() {
+            if argument == "--layout" {
+                guard let id = remaining.popFirst() else {
+                    print("✗ Falta el ID de la distribución después de --layout")
+                    return 1
+                }
+                guard KeyboardLayout.useLayout(id: id) else {
+                    print("✗ No existe la distribución \(id). Instaladas:")
+                    for installed in KeyboardLayout.installedLayoutIDs {
+                        print("  \(installed)")
+                    }
+                    return 1
+                }
+            } else if path == nil {
+                path = argument
+            }
+        }
+        return check(path: path)
+    }
+
+    private static func check(path: String?) -> Int32 {
         let store = ConfigStore()
         let url = path.map { URL(fileURLWithPath: $0) } ?? store.fileURL
         let displayPath = path ?? store.displayPath

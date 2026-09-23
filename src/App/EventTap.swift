@@ -128,24 +128,36 @@ final class EventTap {
             return nil
         case let .replace(taps, key):
             for stroke in taps {
-                post(stroke, keyDown: true, like: event, proxy: proxy)
-                post(stroke, keyDown: false, like: event, proxy: proxy)
+                post(stroke, keyDown: true, keyboardType: keyboardType, proxy: proxy)
+                post(stroke, keyDown: false, keyboardType: keyboardType, proxy: proxy)
             }
             // Rewriting the event in place keeps its timestamp, keyboard type and source.
-            // Apps translate the key code and flags into characters with the current layout.
             event.setIntegerValueField(.keyboardEventKeycode, value: Int64(key.keyCode))
             event.flags = CGEventFlags(rawValue: key.flags.rawValue)
+            setText(of: event, to: key, keyboardType: keyboardType)
             return Unmanaged.passUnretained(event)
         }
     }
 
     /// Sends an extra key event right before the one being processed.
-    private func post(_ stroke: KeyStroke, keyDown: Bool, like original: CGEvent, proxy: CGEventTapProxy) {
+    private func post(_ stroke: KeyStroke, keyDown: Bool, keyboardType: UInt32, proxy: CGEventTapProxy) {
         guard let event = CGEvent(keyboardEventSource: nil, virtualKey: stroke.keyCode, keyDown: keyDown) else { return }
         event.flags = CGEventFlags(rawValue: stroke.flags.rawValue)
-        event.setIntegerValueField(.keyboardEventKeyboardType, value: original.getIntegerValueField(.keyboardEventKeyboardType))
+        event.setIntegerValueField(.keyboardEventKeyboardType, value: Int64(keyboardType))
         event.setIntegerValueField(.eventSourceUserData, value: Self.syntheticEventMarker)
+        setText(of: event, to: stroke, keyboardType: keyboardType)
         event.tapPostEvent(proxy)
+    }
+
+    /// Cocoa text input translates the key code and flags with the current layout, but some apps
+    /// read the text stored in the event instead, so store the new key's text there too. Keys
+    /// that don't type plain text (shortcuts, dead keys, arrows…) keep the system's handling.
+    private func setText(of event: CGEvent, to stroke: KeyStroke, keyboardType: UInt32) {
+        guard let text = KeyboardLayout.typedText(keyCode: stroke.keyCode, flags: stroke.flags, keyboardType: keyboardType) else {
+            return
+        }
+        let characters = Array(text.utf16)
+        event.keyboardSetUnicodeString(stringLength: characters.count, unicodeString: characters)
     }
 
     private func isISO(_ keyboardType: UInt32) -> Bool {

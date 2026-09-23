@@ -29,13 +29,44 @@ enum KeyboardLayout {
         }
     }
 
+    /// Layout to use instead of the current one (`--check --layout`, tests). Only set at startup.
+    nonisolated(unsafe) private static var layoutOverride: TISInputSource?
+
+    /// Uses the keyboard layout with this input source ID (for example
+    /// "com.apple.keylayout.LatinAmerican") instead of the current one. False if not found.
+    static func useLayout(id: String) -> Bool {
+        guard let source = inputSources([kTISPropertyInputSourceID as String: id]).first else { return false }
+        layoutOverride = source
+        return true
+    }
+
+    /// Input source IDs of every installed keyboard layout.
+    static var installedLayoutIDs: [String] {
+        inputSources([kTISPropertyInputSourceType as String: kTISTypeKeyboardLayout as String])
+            .compactMap { string(TISGetInputSourceProperty($0, kTISPropertyInputSourceID)) }
+            .sorted()
+    }
+
+    private static func inputSources(_ filter: [String: String]) -> [TISInputSource] {
+        guard let list = TISCreateInputSourceList(filter as CFDictionary, true)?.takeRetainedValue() else {
+            return []
+        }
+        return list as NSArray as? [TISInputSource] ?? []
+    }
+
+    private static func layoutSource() -> TISInputSource? {
+        layoutOverride ?? TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue()
+    }
+
+    private static func string(_ pointer: UnsafeMutableRawPointer?) -> String? {
+        guard let pointer else { return nil }
+        return Unmanaged<CFString>.fromOpaque(pointer).takeUnretainedValue() as String
+    }
+
     /// Localized name of the current input source, such as "Latinoamericano".
     static var currentLayoutName: String? {
-        guard let source = TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue(),
-              let pointer = TISGetInputSourceProperty(source, kTISPropertyLocalizedName) else {
-            return nil
-        }
-        return Unmanaged<CFString>.fromOpaque(pointer).takeUnretainedValue() as String
+        guard let source = layoutSource() else { return nil }
+        return string(TISGetInputSourceProperty(source, kTISPropertyLocalizedName))
     }
 
     /// For example "Distribución: Latinoamericano · teclado ISO".
@@ -44,11 +75,25 @@ enum KeyboardLayout {
         return "Distribución: \(name) · teclado \(physicalLayoutName(keyboardType: Context.current.keyboardType))"
     }
 
-    /// The printable text typed by a virtual key code with some flags in the current layout.
-    /// Nil for keys that don't type text (return, arrows…) and for command/control shortcuts.
+    /// The character a virtual key code types with some flags in the current layout, for display:
+    /// "␣" for a space, and a dead key shows its accent. Nil for keys that don't type text
+    /// (return, arrows…) and for command/control shortcuts.
     static func character(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32) -> String? {
+        guard let text = translate(keyCode: keyCode, flags: flags, keyboardType: keyboardType, deadKeysAsText: true) else {
+            return nil
+        }
+        return text == " " ? "␣" : text
+    }
+
+    /// The text a key event types, exactly as a real key press would carry it. Nil for dead keys
+    /// and whenever the system's own handling is needed (shortcuts, return, arrows…).
+    static func typedText(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32) -> String? {
+        translate(keyCode: keyCode, flags: flags, keyboardType: keyboardType, deadKeysAsText: false)
+    }
+
+    private static func translate(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32, deadKeysAsText: Bool) -> String? {
         guard flags.isDisjoint(with: [.command, .control]),
-              let source = TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue(),
+              let source = layoutSource(),
               let pointer = TISGetInputSourceProperty(source, kTISPropertyUnicodeKeyLayoutData) else {
             return nil
         }
@@ -66,26 +111,22 @@ enum KeyboardLayout {
             UInt16(kUCKeyActionDown),
             carbonModifierState(flags),
             keyboardType,
-            OptionBits(1 << kUCKeyTranslateNoDeadKeysBit),
+            deadKeysAsText ? OptionBits(1 << kUCKeyTranslateNoDeadKeysBit) : 0,
             &deadKeyState,
             maxLength,
             &length,
             &characters
         )
         guard status == noErr, length > 0 else { return nil }
-        return displayable(String(utf16CodeUnits: characters, count: length))
+        let text = String(utf16CodeUnits: characters, count: length)
+        return isPrintable(text) ? text : nil
     }
 
-    /// Readable form of typed text: "␣" for a space, nil for control characters and the
-    /// private-use characters macOS uses for function keys.
-    static func displayable(_ text: String) -> String? {
-        if text == " " {
-            return "␣"
-        }
-        let printable = text.unicodeScalars.allSatisfy { scalar in
+    /// False for control characters and for the private-use characters of function keys.
+    private static func isPrintable(_ text: String) -> Bool {
+        text.unicodeScalars.allSatisfy { scalar in
             scalar.value >= 0x20 && scalar.value != 0x7F && !(0xF700...0xF8FF).contains(scalar.value)
         }
-        return printable ? text : nil
     }
 
     /// Modifier state in the format `UCKeyTranslate` expects: Carbon's `EventModifiers >> 8`.

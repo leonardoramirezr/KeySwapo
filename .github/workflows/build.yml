@@ -34,6 +34,13 @@ jobs:
             build/KeySwapo.app/Contents/MacOS/KeySwapo --check "$file"
           done
 
+      - name: Check the default rule with the Latin American layout
+        run: |
+          output=$(build/KeySwapo.app/Contents/MacOS/KeySwapo --check examples/pipe-to-underscore.json --layout com.apple.keylayout.LatinAmerican)
+          echo "$output"
+          grep -qF "grave_accent_and_tilde «|»  →  shift + slash «_»" <<< "$output"
+          grep -qF "shift + slash «_»  →  grave_accent_and_tilde «|»" <<< "$output"
+
       - name: Package
         if: matrix.os == 'macos-15'
         run: ditto -c -k --keepParent build/KeySwapo.app build/KeySwapo.zip

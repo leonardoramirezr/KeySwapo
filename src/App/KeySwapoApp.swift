@@ -6,8 +6,7 @@ struct KeySwapoApp {
     static func main() {
         let arguments = CommandLine.arguments
         if let index = arguments.firstIndex(of: "--check") {
-            let path = index + 1 < arguments.count ? arguments[index + 1] : nil
-            exit(CheckCommand.run(path: path))
+            exit(CheckCommand.run(arguments: Array(arguments[(index + 1)...])))
         }
 
         let app = NSApplication.shared

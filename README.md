@@ -159,7 +159,7 @@ make check CONFIG=examples/pipe-to-underscore.json
      Con shift y ningún otro modificador
 ```
 
-Sin archivo, valida `~/.config/keyswapo/keyswapo.json`. Si hay errores, los lista y termina con código 1.
+Sin archivo, valida `~/.config/keyswapo/keyswapo.json`. Si hay errores, los lista y termina con código 1. Para ver los caracteres de otra distribución de teclado, agrega `--layout com.apple.keylayout.LatinAmerican` (u otro ID; con uno que no existe, se listan los instalados).
 
 ## Cómo funciona
 
@@ -194,7 +194,7 @@ La estructura sigue [mac-app-template](https://github.com/leonardoramirezr/mac-a
 | Comando | Qué hace |
 |---------|----------|
 | `make build` | Compila `build/KeySwapo.app` (firma *ad hoc*, o `SIGN_IDENTITY`). |
-| `make test` | Compila y ejecuta las pruebas de `src/Core`. |
+| `make test` | Ejecuta las pruebas de `src/Core` y comprueba, con la distribución Latinoamericana real de macOS, que los nombres de teclas escriben lo esperado (ANSI e ISO). |
 | `make run` | Compila y abre la app desde `build/`. |
 | `make install` | Compila, reemplaza `/Applications/KeySwapo.app` y la abre. |
 | `make check CONFIG=…` | Valida un JSON y muestra lo que hace. |
