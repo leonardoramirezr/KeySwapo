@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- KeySwapo icon proposal 6, Glass: two frosted glass keys trade places, in the style of macOS 26. -->
+  <defs>
+    <path id="shape" d="M383.41 100L640.59 100C722.19 100 763 100 799.79 112.14L806.92 113.89C854.88 131.34 892.66 169.12 910.11 217.08C924 261 924 301.81 924 383.41L924 640.59C924 722.19 924 763 911.86 799.79L910.11 806.92C892.66 854.88 854.88 892.66 806.92 910.11C763 924 722.19 924 640.59 924L383.41 924C301.81 924 261 924 224.21 911.86L217.08 910.11C169.12 892.66 131.34 854.88 113.89 806.92C100 763 100 722.19 100 640.59L100 383.41C100 301.81 100 261 112.14 224.21L113.89 217.08C131.34 169.12 169.12 131.34 217.08 113.89C261 100 301.81 100 383.41 100Z"/>
+    <clipPath id="clip"><use href="#shape"/></clipPath>
+    <filter id="bodyShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="10"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.3"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF6FA8"/>
+      <stop offset="0.5" stop-color="#8A5CFF"/>
+      <stop offset="1" stop-color="#2F7BFF"/>
+    </linearGradient>
+    <radialGradient id="blobB" cx="170" cy="780" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5CE1FF" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#5CE1FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glassFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="glassEdge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#fff" stop-opacity="0.15"/>
+      <stop offset="0.7" stop-color="#fff" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.7"/>
+    </linearGradient>
+    <clipPath id="clipB"><path d="M612.64 464L687.36 464C727.86 464 748.11 464 766.37 470.03L769.9 470.89C793.7 479.55 812.45 498.3 821.11 522.1C828 543.89 828 564.14 828 604.64L828 679.36C828 719.86 828 740.11 821.97 758.37L821.11 761.9C812.45 785.7 793.7 804.45 769.9 813.11C748.11 820 727.86 820 687.36 820L612.64 820C572.14 820 551.89 820 533.63 813.97L530.1 813.11C506.3 804.45 487.55 785.7 478.89 761.9C472 740.11 472 719.86 472 679.36L472 604.64C472 564.14 472 543.89 478.03 525.63L478.89 522.1C487.55 498.3 506.3 479.55 530.1 470.89C551.89 464 572.14 464 612.64 464Z"/></clipPath>
+    <filter id="frost" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <filter id="glassShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="24"/>
+      <feOffset dy="22" result="blur"/>
+      <feFlood flood-color="#2A0E6B" flood-opacity="0.28"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glyphShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+      <feOffset dy="4" result="blur"/>
+      <feFlood flood-color="#2A0E6B" flood-opacity="0.18"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <use href="#shape" fill="#8A5CFF" filter="url(#bodyShadow)"/>
+  <g clip-path="url(#clip)">
+    <g id="scene">
+      <rect x="100" y="100" width="824" height="824" fill="url(#bg)"/>
+      <rect x="100" y="100" width="824" height="824" fill="url(#blobB)"/>
+    </g>
+  </g>
+  <!-- Back key: | -->
+  <g filter="url(#glassShadow)">
+    <path d="M336.64 204L411.36 204C451.86 204 472.11 204 490.37 210.03L493.9 210.89C517.7 219.55 536.45 238.3 545.11 262.1C552 283.89 552 304.14 552 344.64L552 419.36C552 459.86 552 480.11 545.97 498.37L545.11 501.9C536.45 525.7 517.7 544.45 493.9 553.11C472.11 560 451.86 560 411.36 560L336.64 560C296.14 560 275.89 560 257.63 553.97L254.1 553.11C230.3 544.45 211.55 525.7 202.89 501.9C196 480.11 196 459.86 196 419.36L196 344.64C196 304.14 196 283.89 202.03 265.63L202.89 262.1C211.55 238.3 230.3 219.55 254.1 210.89C275.89 204 296.14 204 336.64 204Z" fill="url(#glassFill)"/>
+  </g>
+  <path d="M336.64 204L411.36 204C451.86 204 472.11 204 490.37 210.03L493.9 210.89C517.7 219.55 536.45 238.3 545.11 262.1C552 283.89 552 304.14 552 344.64L552 419.36C552 459.86 552 480.11 545.97 498.37L545.11 501.9C536.45 525.7 517.7 544.45 493.9 553.11C472.11 560 451.86 560 411.36 560L336.64 560C296.14 560 275.89 560 257.63 553.97L254.1 553.11C230.3 544.45 211.55 525.7 202.89 501.9C196 480.11 196 459.86 196 419.36L196 344.64C196 304.14 196 283.89 202.03 265.63L202.89 262.1C211.55 238.3 230.3 219.55 254.1 210.89C275.89 204 296.14 204 336.64 204Z" fill="none" stroke="url(#glassEdge)" stroke-width="5"/>
+  <path d="M357 312L357 452A17 17 0 0 0 391 452L391 312A17 17 0 0 0 357 312Z" fill="#fff" filter="url(#glyphShadow)"/>
+  <!-- Front key: _ , frosting whatever is behind it -->
+  <g filter="url(#glassShadow)">
+    <g clip-path="url(#clipB)">
+      <g filter="url(#frost)">
+        <use href="#scene"/>
+        <path d="M336.64 204L411.36 204C451.86 204 472.11 204 490.37 210.03L493.9 210.89C517.7 219.55 536.45 238.3 545.11 262.1C552 283.89 552 304.14 552 344.64L552 419.36C552 459.86 552 480.11 545.97 498.37L545.11 501.9C536.45 525.7 517.7 544.45 493.9 553.11C472.11 560 451.86 560 411.36 560L336.64 560C296.14 560 275.89 560 257.63 553.97L254.1 553.11C230.3 544.45 211.55 525.7 202.89 501.9C196 480.11 196 459.86 196 419.36L196 344.64C196 304.14 196 283.89 202.03 265.63L202.89 262.1C211.55 238.3 230.3 219.55 254.1 210.89C275.89 204 296.14 204 336.64 204Z" fill="url(#glassFill)"/>
+        <path d="M357 312L357 452A17 17 0 0 0 391 452L391 312A17 17 0 0 0 357 312Z" fill="#fff"/>
+      </g>
+      <path d="M612.64 464L687.36 464C727.86 464 748.11 464 766.37 470.03L769.9 470.89C793.7 479.55 812.45 498.3 821.11 522.1C828 543.89 828 564.14 828 604.64L828 679.36C828 719.86 828 740.11 821.97 758.37L821.11 761.9C812.45 785.7 793.7 804.45 769.9 813.11C748.11 820 727.86 820 687.36 820L612.64 820C572.14 820 551.89 820 533.63 813.97L530.1 813.11C506.3 804.45 487.55 785.7 478.89 761.9C472 740.11 472 719.86 472 679.36L472 604.64C472 564.14 472 543.89 478.03 525.63L478.89 522.1C487.55 498.3 506.3 479.55 530.1 470.89C551.89 464 572.14 464 612.64 464Z" fill="url(#glassFill)"/>
+    </g>
+  </g>
+  <path d="M612.64 464L687.36 464C727.86 464 748.11 464 766.37 470.03L769.9 470.89C793.7 479.55 812.45 498.3 821.11 522.1C828 543.89 828 564.14 828 604.64L828 679.36C828 719.86 828 740.11 821.97 758.37L821.11 761.9C812.45 785.7 793.7 804.45 769.9 813.11C748.11 820 727.86 820 687.36 820L612.64 820C572.14 820 551.89 820 533.63 813.97L530.1 813.11C506.3 804.45 487.55 785.7 478.89 761.9C472 740.11 472 719.86 472 679.36L472 604.64C472 564.14 472 543.89 478.03 525.63L478.89 522.1C487.55 498.3 506.3 479.55 530.1 470.89C551.89 464 572.14 464 612.64 464Z" fill="none" stroke="url(#glassEdge)" stroke-width="5"/>
+  <path d="M584 717L716 717A17 17 0 0 0 716 683L584 683A17 17 0 0 0 584 717Z" fill="#fff" filter="url(#glyphShadow)"/>
+  <!-- Swap arrows -->
+  <g fill="#fff" stroke="#fff" stroke-linejoin="round" filter="url(#glyphShadow)">
+    <path d="M578.75 302.08A136 136 0 0 1 705.26 402.42" fill="none" stroke-width="28" stroke-linecap="round"/>
+    <path d="M710 438L661.74 387.33L732 371.58Z" stroke-width="12"/>
+    <path d="M445.25 721.92A136 136 0 0 1 318.74 621.58" fill="none" stroke-width="28" stroke-linecap="round"/>
+    <path d="M314 586L362.26 636.67L292 652.42Z" stroke-width="12"/>
+  </g>
+</svg>

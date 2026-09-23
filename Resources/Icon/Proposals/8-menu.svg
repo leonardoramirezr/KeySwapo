@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- KeySwapo icon proposal 8, Menu: KeySwapo's own menu in the menu bar, with the rule | → _ switched on. -->
+  <defs>
+    <path id="shape" d="M383.41 100L640.59 100C722.19 100 763 100 799.79 112.14L806.92 113.89C854.88 131.34 892.66 169.12 910.11 217.08C924 261 924 301.81 924 383.41L924 640.59C924 722.19 924 763 911.86 799.79L910.11 806.92C892.66 854.88 854.88 892.66 806.92 910.11C763 924 722.19 924 640.59 924L383.41 924C301.81 924 261 924 224.21 911.86L217.08 910.11C169.12 892.66 131.34 854.88 113.89 806.92C100 763 100 722.19 100 640.59L100 383.41C100 301.81 100 261 112.14 224.21L113.89 217.08C131.34 169.12 169.12 131.34 217.08 113.89C261 100 301.81 100 383.41 100Z"/>
+    <clipPath id="clip"><use href="#shape"/></clipPath>
+    <filter id="bodyShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="10"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.3"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#3B6BFF"/>
+      <stop offset="0.55" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#FF7EB6"/>
+    </linearGradient>
+    <radialGradient id="blob" cx="840" cy="900" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC56B" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#FFC56B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="0.2" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.8" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="chipFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F2F4F8"/>
+    </linearGradient>
+    <filter id="panelShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="26"/>
+      <feOffset dy="18" result="blur"/>
+      <feFlood flood-color="#1B1060" flood-opacity="0.3"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <use href="#shape" fill="url(#bg)" filter="url(#bodyShadow)"/>
+  <g clip-path="url(#clip)">
+    <rect x="100" y="100" width="824" height="824" fill="url(#blob)"/>
+    <!-- Menu bar: menu titles, KeySwapo's item (open) and the clock -->
+    <rect x="100" y="100" width="824" height="116" fill="#fff" opacity="0.55"/>
+    <g fill="#1D1D1F">
+      <rect x="170" y="148" width="44" height="20" rx="10" opacity="0.7"/>
+      <rect x="244" y="148" width="120" height="20" rx="10" opacity="0.4"/>
+      <rect x="394" y="148" width="92" height="20" rx="10" opacity="0.4"/>
+      <rect x="600" y="122" width="92" height="72" rx="18" opacity="0.14"/>
+      <rect x="618" y="140" width="56" height="36" rx="8" fill="none" stroke="#1D1D1F" stroke-width="7"/>
+      <rect x="630" y="151" width="8" height="7" rx="2"/><rect x="644" y="151" width="8" height="7" rx="2"/><rect x="658" y="151" width="6" height="7" rx="2"/>
+      <rect x="632" y="164" width="30" height="6" rx="2"/>
+      <rect x="730" y="148" width="130" height="20" rx="10" opacity="0.55"/>
+    </g>
+  </g>
+  <use href="#shape" fill="none" stroke="url(#rim)" stroke-width="6" clip-path="url(#clip)"/>
+  <!-- Menu -->
+  <g filter="url(#panelShadow)">
+    <path d="M333.83 262L750.17 262C778.34 262 792.42 262 805.12 266.19L807.58 266.79C824.14 272.82 837.18 285.86 843.21 302.42C848 317.58 848 331.66 848 359.83L848 684.17C848 712.34 848 726.42 843.81 739.12L843.21 741.58C837.18 758.14 824.14 771.18 807.58 777.21C792.42 782 778.34 782 750.17 782L333.83 782C305.66 782 291.58 782 278.88 777.81L276.42 777.21C259.86 771.18 246.82 758.14 240.79 741.58C236 726.42 236 712.34 236 684.17L236 359.83C236 331.66 236 317.58 240.19 304.88L240.79 302.42C246.82 285.86 259.86 272.82 276.42 266.79C291.58 262 305.66 262 333.83 262Z" fill="#fff" opacity="0.94"/>
+  </g>
+  <!-- Rule: | → _ -->
+  <g>
+    <path d="M341.97 344L370.03 344C384.99 344 392.47 344 399.22 346.23L400.53 346.55C409.32 349.75 416.25 356.68 419.45 365.47C422 373.53 422 381.01 422 395.97L422 424.03C422 438.99 422 446.47 419.77 453.22L419.45 454.53C416.25 463.32 409.32 470.25 400.53 473.45C392.47 476 384.99 476 370.03 476L341.97 476C327.01 476 319.53 476 312.78 473.77L311.47 473.45C302.68 470.25 295.75 463.32 292.55 454.53C290 446.47 290 438.99 290 424.03L290 395.97C290 381.01 290 373.53 292.23 366.78L292.55 365.47C295.75 356.68 302.68 349.75 311.47 346.55C319.53 344 327.01 344 341.97 344Z" fill="#C4C9D4"/>
+    <path d="M341.97 336L370.03 336C384.99 336 392.47 336 399.22 338.23L400.53 338.55C409.32 341.75 416.25 348.68 419.45 357.47C422 365.53 422 373.01 422 387.97L422 416.03C422 430.99 422 438.47 419.77 445.22L419.45 446.53C416.25 455.32 409.32 462.25 400.53 465.45C392.47 468 384.99 468 370.03 468L341.97 468C327.01 468 319.53 468 312.78 465.77L311.47 465.45C302.68 462.25 295.75 455.32 292.55 446.53C290 438.47 290 430.99 290 416.03L290 387.97C290 373.01 290 365.53 292.23 358.78L292.55 357.47C295.75 348.68 302.68 341.75 311.47 338.55C319.53 336 327.01 336 341.97 336Z" fill="url(#chipFace)" stroke="#D7DBE3" stroke-width="2"/>
+    <path d="M346 366L346 438A10 10 0 0 0 366 438L366 366A10 10 0 0 0 346 366Z" fill="#1D1D1F"/>
+    <path d="M472 402H578M548 372L578 402L548 432" fill="none" stroke="#0A84FF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M669.97 344L698.03 344C712.99 344 720.47 344 727.22 346.23L728.53 346.55C737.32 349.75 744.25 356.68 747.45 365.47C750 373.53 750 381.01 750 395.97L750 424.03C750 438.99 750 446.47 747.77 453.22L747.45 454.53C744.25 463.32 737.32 470.25 728.53 473.45C720.47 476 712.99 476 698.03 476L669.97 476C655.01 476 647.53 476 640.78 473.77L639.47 473.45C630.68 470.25 623.75 463.32 620.55 454.53C618 446.47 618 438.99 618 424.03L618 395.97C618 381.01 618 373.53 620.23 366.78L620.55 365.47C623.75 356.68 630.68 349.75 639.47 346.55C647.53 344 655.01 344 669.97 344Z" fill="#C4C9D4"/>
+    <path d="M669.97 336L698.03 336C712.99 336 720.47 336 727.22 338.23L728.53 338.55C737.32 341.75 744.25 348.68 747.45 357.47C750 365.53 750 373.01 750 387.97L750 416.03C750 430.99 750 438.47 747.77 445.22L747.45 446.53C744.25 455.32 737.32 462.25 728.53 465.45C720.47 468 712.99 468 698.03 468L669.97 468C655.01 468 647.53 468 640.78 465.77L639.47 465.45C630.68 462.25 623.75 455.32 620.55 446.53C618 438.47 618 430.99 618 416.03L618 387.97C618 373.01 618 365.53 620.23 358.78L620.55 357.47C623.75 348.68 630.68 341.75 639.47 338.55C647.53 336 655.01 336 669.97 336Z" fill="url(#chipFace)" stroke="#D7DBE3" stroke-width="2"/>
+    <path d="M652 440L716 440A10 10 0 0 0 716 420L652 420A10 10 0 0 0 652 440Z" fill="#1D1D1F"/>
+  </g>
+  <!-- "Remapeo activado", switched on -->
+  <g>
+    <rect x="290" y="532" width="504" height="6" rx="3" fill="#1D1D1F" opacity="0.1"/>
+    <rect x="290" y="598" width="250" height="28" rx="14" fill="#1D1D1F" opacity="0.28"/>
+    <rect x="290" y="658" width="180" height="28" rx="14" fill="#1D1D1F" opacity="0.18"/>
+    <rect x="644" y="584" width="150" height="88" rx="44" fill="#34C759"/>
+    <circle cx="750" cy="628" r="36" fill="#fff"/>
+  </g>
+</svg>

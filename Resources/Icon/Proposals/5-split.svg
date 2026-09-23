@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- KeySwapo icon proposal 5, Split: one key cut in two, | on one half and _ on the other. -->
+  <defs>
+    <path id="shape" d="M383.41 100L640.59 100C722.19 100 763 100 799.79 112.14L806.92 113.89C854.88 131.34 892.66 169.12 910.11 217.08C924 261 924 301.81 924 383.41L924 640.59C924 722.19 924 763 911.86 799.79L910.11 806.92C892.66 854.88 854.88 892.66 806.92 910.11C763 924 722.19 924 640.59 924L383.41 924C301.81 924 261 924 224.21 911.86L217.08 910.11C169.12 892.66 131.34 854.88 113.89 806.92C100 763 100 722.19 100 640.59L100 383.41C100 301.81 100 261 112.14 224.21L113.89 217.08C131.34 169.12 169.12 131.34 217.08 113.89C261 100 301.81 100 383.41 100Z"/>
+    <clipPath id="clip"><use href="#shape"/></clipPath>
+    <filter id="bodyShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="10"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.3"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A98BFF"/>
+      <stop offset="0.55" stop-color="#7447F5"/>
+      <stop offset="1" stop-color="#4B22C9"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="512" cy="110" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="0.2" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.8" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="lightFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEEFF5"/>
+    </linearGradient>
+    <linearGradient id="lightSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D4D6E2"/>
+      <stop offset="1" stop-color="#A3A7BA"/>
+    </linearGradient>
+    <linearGradient id="darkFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A3947"/>
+      <stop offset="1" stop-color="#1D1C26"/>
+    </linearGradient>
+    <linearGradient id="darkSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#15141C"/>
+      <stop offset="1" stop-color="#0B0A10"/>
+    </linearGradient>
+    <clipPath id="upper"><path d="M172.5 851.12L832.5 145.12L175.05 -469.49L-484.95 236.51Z"/></clipPath>
+    <clipPath id="lower"><path d="M191.5 868.88L851.5 162.88L1508.95 777.49L848.95 1483.49Z"/></clipPath>
+    <filter id="keyShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+  </defs>
+  <use href="#shape" fill="url(#bg)" filter="url(#bodyShadow)"/>
+  <g clip-path="url(#clip)">
+    <rect x="100" y="100" width="824" height="824" fill="url(#glow)"/>
+  </g>
+  <use href="#shape" fill="none" stroke="url(#rim)" stroke-width="6" clip-path="url(#clip)"/>
+  <path d="M444.7 297.8L579.3 297.8C633 297.8 659.85 297.8 684.07 305.79L688.76 306.94C720.32 318.43 745.17 343.28 756.66 374.84C765.8 403.75 765.8 430.6 765.8 484.3L765.8 618.9C765.8 672.6 765.8 699.45 757.81 723.67L756.66 728.36C745.17 759.92 720.32 784.77 688.76 796.26C659.85 805.4 633 805.4 579.3 805.4L444.7 805.4C391 805.4 364.15 805.4 339.93 797.41L335.24 796.26C303.68 784.77 278.83 759.92 267.34 728.36C258.2 699.45 258.2 672.6 258.2 618.9L258.2 484.3C258.2 430.6 258.2 403.75 266.19 379.53L267.34 374.84C278.83 343.28 303.68 318.43 335.24 306.94C364.15 297.8 391 297.8 444.7 297.8Z" fill="#26085F" opacity="0.55" filter="url(#keyShadow)"/>
+  <!-- Upper half: | -->
+  <g clip-path="url(#upper)">
+    <path d="M428.5 260L595.5 260C649.2 260 676.05 260 700.27 267.99L704.96 269.14C736.52 280.63 761.37 305.48 772.86 337.04C782 365.95 782 392.8 782 446.5L782 613.5C782 667.2 782 694.05 774.01 718.27L772.86 722.96C761.37 754.52 736.52 779.37 704.96 790.86C676.05 800 649.2 800 595.5 800L428.5 800C374.8 800 347.95 800 323.73 792.01L319.04 790.86C287.48 779.37 262.63 754.52 251.14 722.96C242 694.05 242 667.2 242 613.5L242 446.5C242 392.8 242 365.95 249.99 341.73L251.14 337.04C262.63 305.48 287.48 280.63 319.04 269.14C347.95 260 374.8 260 428.5 260Z" fill="url(#lightSide)"/>
+    <path d="M428.5 214L595.5 214C649.2 214 676.05 214 700.27 221.99L704.96 223.14C736.52 234.63 761.37 259.48 772.86 291.04C782 319.95 782 346.8 782 400.5L782 567.5C782 621.2 782 648.05 774.01 672.27L772.86 676.96C761.37 708.52 736.52 733.37 704.96 744.86C676.05 754 649.2 754 595.5 754L428.5 754C374.8 754 347.95 754 323.73 746.01L319.04 744.86C287.48 733.37 262.63 708.52 251.14 676.96C242 648.05 242 621.2 242 567.5L242 400.5C242 346.8 242 319.95 249.99 295.73L251.14 291.04C262.63 259.48 287.48 234.63 319.04 223.14C347.95 214 374.8 214 428.5 214Z" fill="url(#lightFace)"/>
+    <path d="M407.6 322L407.6 484A18 18 0 0 0 443.6 484L443.6 322A18 18 0 0 0 407.6 322Z" fill="#5B2BE0"/>
+  </g>
+  <!-- Lower half: _ -->
+  <g clip-path="url(#lower)">
+    <path d="M428.5 260L595.5 260C649.2 260 676.05 260 700.27 267.99L704.96 269.14C736.52 280.63 761.37 305.48 772.86 337.04C782 365.95 782 392.8 782 446.5L782 613.5C782 667.2 782 694.05 774.01 718.27L772.86 722.96C761.37 754.52 736.52 779.37 704.96 790.86C676.05 800 649.2 800 595.5 800L428.5 800C374.8 800 347.95 800 323.73 792.01L319.04 790.86C287.48 779.37 262.63 754.52 251.14 722.96C242 694.05 242 667.2 242 613.5L242 446.5C242 392.8 242 365.95 249.99 341.73L251.14 337.04C262.63 305.48 287.48 280.63 319.04 269.14C347.95 260 374.8 260 428.5 260Z" fill="url(#darkSide)"/>
+    <path d="M428.5 214L595.5 214C649.2 214 676.05 214 700.27 221.99L704.96 223.14C736.52 234.63 761.37 259.48 772.86 291.04C782 319.95 782 346.8 782 400.5L782 567.5C782 621.2 782 648.05 774.01 672.27L772.86 676.96C761.37 708.52 736.52 733.37 704.96 744.86C676.05 754 649.2 754 595.5 754L428.5 754C374.8 754 347.95 754 323.73 746.01L319.04 744.86C287.48 733.37 262.63 708.52 251.14 676.96C242 648.05 242 621.2 242 567.5L242 400.5C242 346.8 242 319.95 249.99 295.73L251.14 291.04C262.63 259.48 287.48 234.63 319.04 223.14C347.95 214 374.8 214 428.5 214Z" fill="url(#darkFace)"/>
+    <path d="M533.6 642.4L674 642.4A18 18 0 0 0 674 606.4L533.6 606.4A18 18 0 0 0 533.6 642.4Z" fill="#fff"/>
+  </g>
+</svg>
