@@ -19,16 +19,18 @@ Ocho propuestas de ícono para KeySwapo en SVG, con la cuadrícula de los ícono
 
 Las más simples (1, 2 y 5) son las que mejor se reconocen en tamaños pequeños (16 y 32 px). La 4 y la 8 tienen más detalle y lucen más a partir de 64 px.
 
-## Usar una como ícono de la app
+## Ícono de la app
 
-`build.sh` incluye `Resources/Icon/AppIcon.icns` en la app si existe. Para crearlo a partir de una propuesta, en macOS y con `rsvg-convert` (`brew install librsvg`):
+La app usa la propuesta 4 (**Teclado**): su SVG está en [`../AppIcon.svg`](../AppIcon.svg) y `build.sh` incluye [`../AppIcon.icns`](../AppIcon.icns) en la app.
+
+Para regenerar `AppIcon.icns` después de editar `AppIcon.svg` (o para cambiar a otra propuesta, copiándola antes sobre `AppIcon.svg`), en macOS y con `rsvg-convert` (`brew install librsvg`):
 
 ```sh
 cd Resources/Icon
 mkdir AppIcon.iconset
 for size in 16 32 128 256 512; do
-    rsvg-convert -w $size -h $size Proposals/1-swap.svg -o AppIcon.iconset/icon_${size}x${size}.png
-    rsvg-convert -w $((size * 2)) -h $((size * 2)) Proposals/1-swap.svg -o AppIcon.iconset/icon_${size}x${size}@2x.png
+    rsvg-convert -w $size -h $size AppIcon.svg -o AppIcon.iconset/icon_${size}x${size}.png
+    rsvg-convert -w $((size * 2)) -h $((size * 2)) AppIcon.svg -o AppIcon.iconset/icon_${size}x${size}@2x.png
 done
 iconutil -c icns AppIcon.iconset
 rm -r AppIcon.iconset
