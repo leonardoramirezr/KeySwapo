@@ -164,7 +164,7 @@ Sin archivo, valida `~/.config/keyswapo/keyswapo.json`. Si hay errores, los list
 ## Cómo funciona
 
 - KeySwapo instala un `CGEventTap` de sesión, que ve cada pulsación antes que las apps. Por eso necesita el permiso de Accesibilidad.
-- Si una pulsación coincide con un manipulador, cambia en el propio evento el código de tecla y los modificadores (por ejemplo, `grave_accent_and_tilde` → `slash` con ⇧). La app que lo recibe traduce ese evento a un carácter con tu distribución de teclado, así que escribe `_`. Las pulsaciones que no coinciden pasan intactas.
+- Si una pulsación coincide con un manipulador, cambia en el propio evento el código de tecla y los modificadores (por ejemplo, `grave_accent_and_tilde` → `slash` con ⇧). La app que lo recibe traduce ese evento a un carácter con tu distribución de teclado, así que escribe `_`. El evento también lleva ese texto, para las apps que lo leen directamente. Las pulsaciones que no coinciden pasan intactas.
 - Recuerda qué regla tomó cada tecla presionada. Así la autorrepetición y la liberación de la tecla se traducen igual, aunque sueltes ⇧ antes que la tecla o recargues las reglas en medio.
 - Una salida nunca se vuelve a procesar, igual que en Karabiner. `|` → `_` no dispara la regla de ⇧ + `-` → `|`.
 
@@ -184,7 +184,10 @@ La estructura sigue [mac-app-template](https://github.com/leonardoramirezr/mac-a
 │   ├── Core/          # Lógica sin dependencias de plataforma: nombres de teclas,
 │   │                  # modificadores, lector del JSON y remapeador (con pruebas)
 │   └── App/           # macOS: event tap, barra de menús, ventana SwiftUI, --check
-├── tests/main.swift   # Pruebas de src/Core
+├── tests/
+│   ├── main.swift     # Pruebas de src/Core
+│   ├── layout/        # Nombres de teclas contra la distribución Latinoamericana real
+│   └── e2e/           # Prueba de punta a punta del event tap (solo en CI)
 ├── examples/          # Configuraciones de ejemplo
 ├── Info.plist
 ├── build.sh
@@ -195,13 +198,14 @@ La estructura sigue [mac-app-template](https://github.com/leonardoramirezr/mac-a
 |---------|----------|
 | `make build` | Compila `build/KeySwapo.app` (firma *ad hoc*, o `SIGN_IDENTITY`). |
 | `make test` | Ejecuta las pruebas de `src/Core` y comprueba, con la distribución Latinoamericana real de macOS, que los nombres de teclas escriben lo esperado (ANSI e ISO). |
+| `make e2e-test` | Prueba de punta a punta: con la distribución Latinoamericana y el event tap de KeySwapo activo, simula `\|`, ⇧ + `\|`, `-` y ⇧ + `-` (teclados ANSI e ISO) y comprueba que un campo de texto recibe `_°-\|`. Cambia la distribución de teclado y escribe en la sesión, así que solo corre en CI. |
 | `make run` | Compila y abre la app desde `build/`. |
 | `make install` | Compila, reemplaza `/Applications/KeySwapo.app` y la abre. |
 | `make check CONFIG=…` | Valida un JSON y muestra lo que hace. |
 | `make reset-permissions` | Olvida el permiso de Accesibilidad de KeySwapo. |
 | `make clean` | Borra `build/`. |
 
-En cada *push*, GitHub Actions ejecuta las pruebas y compila la app en macOS. La app compilada queda como *artifact* del flujo.
+En cada *push*, GitHub Actions ejecuta todas las pruebas y compila la app en macOS 15 y macOS 26. La app compilada queda como *artifact* del flujo. Al descargarla, macOS la bloquea por no estar notarizada; compilarla tú con `make install` evita ese paso.
 
 ## Licencia
 

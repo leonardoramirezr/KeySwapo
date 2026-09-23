@@ -149,14 +149,14 @@ final class EventTap {
         event.tapPostEvent(proxy)
     }
 
-    /// Cocoa text input translates the key code and flags with the current layout, but some apps
-    /// read the text stored in the event instead, so store the new key's text there too. Keys
-    /// that don't type plain text (shortcuts, dead keys, arrows…) keep the system's handling.
+    /// macOS stores the typed text in the event when it creates it and doesn't update it when the
+    /// key code or flags change, so without this a rewritten `|` would still carry "|" (and
+    /// control + h rewritten to an arrow would carry a backspace). Store what a real press of the
+    /// new key carries instead.
     private func setText(of event: CGEvent, to stroke: KeyStroke, keyboardType: UInt32) {
-        guard let text = KeyboardLayout.typedText(keyCode: stroke.keyCode, flags: stroke.flags, keyboardType: keyboardType) else {
+        guard let characters = KeyboardLayout.eventText(keyCode: stroke.keyCode, flags: stroke.flags, keyboardType: keyboardType) else {
             return
         }
-        let characters = Array(text.utf16)
         event.keyboardSetUnicodeString(stringLength: characters.count, unicodeString: characters)
     }
 

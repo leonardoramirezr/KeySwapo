@@ -1,21 +1,16 @@
 // End-to-end check meant for CI (`make e2e-test`). It selects the Latin American layout, starts
-// KeySwapo's event tap with the default configuration, simulates key presses as if they came
-// from ANSI and ISO keyboards, and checks what a text field receives. It changes the keyboard
-// layout and sends keystrokes to the session, so don't run it on your own Mac.
+// KeySwapo's event tap, simulates key presses as if they came from ANSI and ISO keyboards, and
+// checks what reaches a text field. It changes the keyboard layout and sends keystrokes to the
+// session, so don't run it on your own Mac.
 import AppKit
+import ApplicationServices
 import Carbon
 
 setbuf(stdout, nil)
 
-/// Key events as seen after KeySwapo's tap, by a listen-only tap placed after it.
+/// Key presses as seen after KeySwapo's tap, by a listen-only tap placed after it.
 final class Recorder {
-    struct Entry {
-        let keyCode: Int64
-        let flags: UInt64
-        let text: String
-    }
-
-    private(set) var keyDowns: [Entry] = []
+    private(set) var keyDowns: [CGEvent] = []
     private var port: CFMachPort?
 
     func start() -> Bool {
@@ -26,8 +21,8 @@ final class Recorder {
             options: .listenOnly,
             eventsOfInterest: mask,
             callback: { _, type, event, userInfo in
-                if let userInfo, type == .keyDown {
-                    Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue().record(event)
+                if let userInfo, type == .keyDown, let copy = event.copy() {
+                    Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue().keyDowns.append(copy)
                 }
                 return Unmanaged.passUnretained(event)
             },
@@ -40,25 +35,15 @@ final class Recorder {
         self.port = port
         return true
     }
-
-    private func record(_ event: CGEvent) {
-        var length = 0
-        var characters = [UniChar](repeating: 0, count: 8)
-        let maxLength = characters.count
-        event.keyboardGetUnicodeString(maxStringLength: maxLength, actualStringLength: &length, unicodeString: &characters)
-        keyDowns.append(Entry(
-            keyCode: event.getIntegerValueField(.keyboardEventKeycode),
-            flags: event.flags.rawValue,
-            text: String(utf16CodeUnits: characters, count: length)
-        ))
-    }
 }
 
 struct Press {
-    let keyCode: UInt16
-    let shift: Bool
-    let keyboardType: UInt32
     let label: String
+    let keyCode: UInt16
+    let flags: EventFlags
+    let keyboardType: UInt32
+    /// Text the event must carry after KeySwapo's tap.
+    let expectedText: String
 }
 
 @MainActor
@@ -69,6 +54,12 @@ enum EndToEnd {
     static var window: NSWindow?
     static var field: NSTextField?
     static var originalLayout: TISInputSource?
+
+    static let arrowRule = """
+    {"manipulators": [{"type": "basic",
+        "from": {"key_code": "h", "modifiers": {"mandatory": ["control"], "optional": ["any"]}},
+        "to": [{"key_code": "left_arrow"}]}]}
+    """
 
     static func start() {
         let app = NSApplication.shared
@@ -84,9 +75,10 @@ enum EndToEnd {
         }
 
         do {
-            tap.remapper.setRules(try ConfigParser.parse(DefaultConfig.json).rules)
+            let rules = try ConfigParser.parse(DefaultConfig.json).rules + ConfigParser.parse(arrowRule).rules
+            tap.remapper.setRules(rules)
         } catch {
-            finish("default configuration: \(error)", success: false)
+            finish("configuration: \(error)", success: false)
         }
         guard tap.start() else {
             finish("could not create KeySwapo's event tap (is the Accessibility permission granted?)", success: false)
@@ -109,75 +101,121 @@ enum EndToEnd {
 
         let grave = KeyCodes.code(for: "grave_accent_and_tilde")!
         let slash = KeyCodes.code(for: "slash")!
-        let presses = [
-            Press(keyCode: grave, shift: false, keyboardType: ansi, label: "ANSI |"),
-            Press(keyCode: grave, shift: true, keyboardType: ansi, label: "ANSI shift + |"),
-            Press(keyCode: slash, shift: false, keyboardType: ansi, label: "ANSI -"),
-            Press(keyCode: slash, shift: true, keyboardType: ansi, label: "ANSI shift + -"),
+        let shift: EventFlags = [.shift, .leftShift]
+        var presses: [Press] = []
+        for (name, type, pipeKey) in [("ANSI", ansi, grave), ("ISO", iso, KeyCodes.isoSection)] {
             // On ISO keyboards macOS reports the key left of 1 as kVK_ISO_Section.
-            Press(keyCode: KeyCodes.isoSection, shift: false, keyboardType: iso, label: "ISO |"),
-            Press(keyCode: KeyCodes.isoSection, shift: true, keyboardType: iso, label: "ISO shift + |"),
-            Press(keyCode: slash, shift: false, keyboardType: iso, label: "ISO -"),
-            Press(keyCode: slash, shift: true, keyboardType: iso, label: "ISO shift + -"),
+            presses += [
+                Press(label: "\(name) |", keyCode: pipeKey, flags: [], keyboardType: type, expectedText: "_"),
+                Press(label: "\(name) shift + |", keyCode: pipeKey, flags: shift, keyboardType: type, expectedText: "°"),
+                Press(label: "\(name) -", keyCode: slash, flags: [], keyboardType: type, expectedText: "-"),
+                Press(label: "\(name) shift + -", keyCode: slash, flags: shift, keyboardType: type, expectedText: "|"),
+            ]
+        }
+        // A remapped key that doesn't type text: control + h must move left, not delete.
+        presses += [
+            Press(label: "a", keyCode: KeyCodes.code(for: "a")!, flags: [], keyboardType: ansi, expectedText: "a"),
+            Press(label: "b", keyCode: KeyCodes.code(for: "b")!, flags: [], keyboardType: ansi, expectedText: "b"),
+            Press(label: "control + h", keyCode: KeyCodes.code(for: "h")!, flags: [.control, .leftControl], keyboardType: ansi, expectedText: "\u{1C}"),
+            Press(label: "c", keyCode: KeyCodes.code(for: "c")!, flags: [], keyboardType: ansi, expectedText: "c"),
         ]
 
-        later(0.5) {
-            app.activate()
+        later(0.3) {
+            activate(app)
             window.makeKeyAndOrderFront(nil)
             window.orderFrontRegardless()
             _ = window.makeFirstResponder(field)
         }
         for (index, press) in presses.enumerated() {
-            later(1.5 + Double(index) * 0.3) {
+            later(1.5 + Double(index) * 0.25) {
                 post(press)
             }
         }
-        later(1.5 + Double(presses.count) * 0.3 + 1.5) {
+        later(1.5 + Double(presses.count) * 0.25 + 1.5) {
             check(presses)
         }
-        later(30) {
+        later(40) {
             finish("timed out", success: false)
         }
         app.run()
     }
 
+    /// Brings this process to the front. `NSApp.activate()` alone is ignored for a background
+    /// command line process, but setting the Accessibility "frontmost" attribute works.
+    static func activate(_ app: NSApplication) {
+        let element = AXUIElementCreateApplication(ProcessInfo.processInfo.processIdentifier)
+        let result = AXUIElementSetAttributeValue(element, kAXFrontmostAttribute as CFString, kCFBooleanTrue)
+        app.activate()
+        print("Activation through Accessibility: \(result == .success ? "ok" : "error \(result.rawValue)")")
+    }
+
+    /// Posts a press like the keyboard would: the event carries the text macOS would store for
+    /// it, which KeySwapo has to replace when it rewrites the key.
     static func post(_ press: Press) {
         let source = CGEventSource(stateID: .hidSystemState)
         source?.keyboardType = press.keyboardType
-        var flags = EventFlags(rawValue: 0x100) // non-coalesced, as on real key events
-        if press.shift {
-            flags.formUnion([.shift, .leftShift])
-        }
+        let flags = press.flags.union(EventFlags(rawValue: 0x100)) // non-coalesced, as on real key events
+        let text = KeyboardLayout.eventText(keyCode: press.keyCode, flags: flags, keyboardType: press.keyboardType) ?? []
         for keyDown in [true, false] {
             guard let event = CGEvent(keyboardEventSource: source, virtualKey: press.keyCode, keyDown: keyDown) else { continue }
             event.flags = CGEventFlags(rawValue: flags.rawValue)
             event.setIntegerValueField(.keyboardEventKeyboardType, value: Int64(press.keyboardType))
+            event.keyboardSetUnicodeString(stringLength: text.count, unicodeString: text)
             event.post(tap: .cghidEventTap)
         }
     }
 
     static func check(_ presses: [Press]) {
-        let expected = "_°-|_°-|"
-        let typed = field?.currentEditor()?.string ?? field?.stringValue ?? ""
-        print("Key downs after KeySwapo's tap:")
-        for (index, entry) in recorder.keyDowns.enumerated() {
-            let label = index < presses.count ? presses[index].label : "?"
-            print("  \(label): key code \(entry.keyCode), flags 0x\(String(entry.flags, radix: 16)), text \"\(entry.text)\"")
-        }
-        print("Window is key: \(window?.isKeyWindow ?? false), app is active: \(NSApp.isActive)")
-        print("Text field: \"\(typed)\" (expected \"\(expected)\")")
-
-        let texts = recorder.keyDowns.map(\.text).joined()
         var problems: [String] = []
-        if recorder.keyDowns.count != presses.count {
-            problems.append("recorded \(recorder.keyDowns.count) key downs instead of \(presses.count)")
-        } else if texts != expected {
-            problems.append("event texts \"\(texts)\" instead of \"\(expected)\"")
+
+        print("Key presses after KeySwapo's tap:")
+        let recorded = recorder.keyDowns
+        for (index, event) in recorded.enumerated() {
+            let label = index < presses.count ? presses[index].label : "?"
+            let text = eventText(event)
+            print("  \(label): key code \(event.getIntegerValueField(.keyboardEventKeycode)), flags 0x\(String(event.flags.rawValue, radix: 16)), text \(text.debugDescription)")
+            if index < presses.count && text != presses[index].expectedText {
+                problems.append("\(label) carries \(text.debugDescription) instead of \(presses[index].expectedText.debugDescription)")
+            }
         }
+        if recorded.count != presses.count {
+            problems.append("recorded \(recorded.count) presses instead of \(presses.count)")
+        }
+
+        let expected = "_°-|_°-|acb"
+        let isKey = window?.isKeyWindow ?? false
+        print("Window is key: \(isKey), app is active: \(NSApp.isActive), frontmost: \(NSWorkspace.shared.frontmostApplication?.localizedName ?? "none")")
+        var typed = fieldText()
+        if !isKey {
+            // The events went to another app; hand the rewritten events to the field directly,
+            // which still exercises how AppKit reads them.
+            print("Window never became key; replaying the rewritten events into the text field")
+            if let editor = field?.currentEditor() as? NSTextView {
+                for event in recorded {
+                    if let nsEvent = NSEvent(cgEvent: event) {
+                        editor.keyDown(with: nsEvent)
+                    }
+                }
+            }
+            typed = fieldText()
+        }
+        print("Text field: \(typed.debugDescription) (expected \(expected.debugDescription))")
         if typed != expected {
-            problems.append("text field got \"\(typed)\"")
+            problems.append("text field got \(typed.debugDescription)")
         }
         finish(problems.joined(separator: "; "), success: problems.isEmpty)
+    }
+
+    static func fieldText() -> String {
+        field?.currentEditor()?.string ?? field?.stringValue ?? ""
+    }
+
+    static func eventText(_ event: CGEvent) -> String {
+        var length = 0
+        var characters = [UniChar](repeating: 0, count: 8)
+        let maxLength = characters.count
+        event.keyboardGetUnicodeString(maxStringLength: maxLength, actualStringLength: &length, unicodeString: &characters)
+        return String(utf16CodeUnits: characters, count: length)
     }
 
     static func selectLayout(id: String) -> Bool {

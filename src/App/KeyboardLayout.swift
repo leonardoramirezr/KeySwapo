@@ -79,21 +79,25 @@ enum KeyboardLayout {
     /// "␣" for a space, and a dead key shows its accent. Nil for keys that don't type text
     /// (return, arrows…) and for command/control shortcuts.
     static func character(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32) -> String? {
-        guard let text = translate(keyCode: keyCode, flags: flags, keyboardType: keyboardType, deadKeysAsText: true) else {
+        guard flags.isDisjoint(with: [.command, .control]),
+              let characters = translate(keyCode: keyCode, flags: flags, keyboardType: keyboardType, deadKeysAsText: true),
+              !characters.isEmpty else {
             return nil
         }
+        let text = String(utf16CodeUnits: characters, count: characters.count)
+        guard isPrintable(text) else { return nil }
         return text == " " ? "␣" : text
     }
 
-    /// The text a key event types, exactly as a real key press would carry it. Nil for dead keys
-    /// and whenever the system's own handling is needed (shortcuts, return, arrows…).
-    static func typedText(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32) -> String? {
+    /// The text macOS stores in the event of a real press of this key with these flags: control
+    /// characters included, and empty for a dead key. macOS fills it in when the event is created
+    /// and doesn't update it if the key code or flags change later. Nil without layout data.
+    static func eventText(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32) -> [UniChar]? {
         translate(keyCode: keyCode, flags: flags, keyboardType: keyboardType, deadKeysAsText: false)
     }
 
-    private static func translate(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32, deadKeysAsText: Bool) -> String? {
-        guard flags.isDisjoint(with: [.command, .control]),
-              let source = layoutSource(),
+    private static func translate(keyCode: UInt16, flags: EventFlags, keyboardType: UInt32, deadKeysAsText: Bool) -> [UniChar]? {
+        guard let source = layoutSource(),
               let pointer = TISGetInputSourceProperty(source, kTISPropertyUnicodeKeyLayoutData) else {
             return nil
         }
@@ -117,9 +121,8 @@ enum KeyboardLayout {
             &length,
             &characters
         )
-        guard status == noErr, length > 0 else { return nil }
-        let text = String(utf16CodeUnits: characters, count: length)
-        return isPrintable(text) ? text : nil
+        guard status == noErr else { return nil }
+        return Array(characters.prefix(length))
     }
 
     /// False for control characters and for the private-use characters of function keys.
